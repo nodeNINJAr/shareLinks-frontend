@@ -6,6 +6,8 @@ import App from "./App.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import '@ant-design/v5-patch-for-react-19';
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
