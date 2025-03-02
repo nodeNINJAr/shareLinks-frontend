@@ -2,14 +2,27 @@ import { GoogleOutlined } from "@ant-design/icons";
 import { Button, message } from "antd";
 import Item from "antd/es/list/Item";
 import React from "react";
+import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const GoogleLogin = () => {
+const {googleLoginIn} = useAuth();
+const navigate = useNavigate();
 
 
-const handleGoogleLogin = () => {
-    console.log('Google login clicked');
-    message.info('Google login functionality to be implemented.');
-    };
+
+// 
+const handleGoogleLogin = async() => {
+  // 
+  try{
+    await googleLoginIn();
+    message.info('Google login Succesfully.');
+    navigate('/app')
+   }catch(err){
+     console.log(err.message);
+   }
+
+};
 
   // 
   return (

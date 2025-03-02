@@ -2,26 +2,35 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button, Input, Card, Form, Checkbox, message } from 'antd';
 import GoogleLogin from '../components/GoogleLogin';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import useAuth from '../hooks/useAuth';
 
 const { Item } = Form;
 
 const Register = () => {
+const {createUser} = useAuth();
+const navigate = useNavigate();
+  // 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      username: '',
+      userName: '',
       email: '',
       password: '',
     },
   });
 
-  const onSubmit = (data) => {
-    console.log('Registration Data:', data);
-    message.success('Registration successful!');
+  const onSubmit = async(data) => {
+     try{
+      await createUser(data?.email, data?.password);
+      message.success('Registration successful!');
+      navigate('/app');
+     }catch(err){
+       console.log(err.message);
+     }
   };
 
 

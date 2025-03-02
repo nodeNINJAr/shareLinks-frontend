@@ -2,11 +2,17 @@ import { Button, Card, Input, message } from "antd";
 import Item from "antd/es/list/Item";
 import { Controller, useForm } from "react-hook-form";
 import GoogleLogin from "../components/GoogleLogin";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import useAuth from "../hooks/useAuth";
+
 
 
 
 const Login = () => {
+const {loginUser} = useAuth();
+const navigate = useNavigate();
+
+  // 
   const {
     control,
     handleSubmit,
@@ -18,9 +24,14 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log('Login Data:', data);
-    message.success('Login successful!');
+  const onSubmit = async(data) => {
+        try{
+          await loginUser(data?.email, data?.password);
+          message.success('Login successful!');
+          navigate('/app');
+         }catch(err){
+           console.log(err.message);
+         }
   };
 
 
