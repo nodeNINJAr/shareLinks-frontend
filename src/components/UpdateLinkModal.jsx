@@ -73,12 +73,10 @@ const UpdateLinkModal = ({ visible, onClose, linkData,refetch }) => {
     }
     // 
     try {
-      const response = await axiosSecure.patch(`/link/${linkData?._id}/update`, formData);
-      console.log(response.data);
+       await axiosSecure.patch(`/link/${linkData?._id}/update`, formData);
       refetch();
       message.success("Link updated successfully");
     } catch (error) {
-      console.error("Update failed:", error.response?.data);
       message.error("Failed to update link");
     }
     onClose();

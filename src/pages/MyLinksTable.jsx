@@ -1,5 +1,5 @@
-import React, {useState } from "react";
-import { Table, Button,Space, message } from "antd";
+import React, { useState } from "react";
+import { Table, Button, Space, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
@@ -8,20 +8,23 @@ import UpdateLinkModal from "../components/UpdateLinkModal";
 
 const LinkList = () => {
   const [editingLink, setEditingLink] = useState(null);
-  // 
-const {user} = useAuth();
-const axiosSecure = useAxiosSecure();
- const {data:myGenLinks=[], isLoading,refetch} = useQuery({
-   queryKey:['my-links'],
-   enabled:!!user?.uid,
-   queryFn:async()=>{
-     const {data} = await axiosSecure.get(`/link/person/${user?.uid}`);
-     return data
-   }
- })
+  //
+  const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
+  const {
+    data: myGenLinks = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["my-links"],
+    enabled: !!user?.uid,
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/link/person/${user?.uid}`);
+      return data;
+    },
+  });
 
-
- console.log(myGenLinks);
+  console.log(myGenLinks);
   // Handle Delete
   const handleDelete = async (id) => {
     try {
@@ -38,24 +41,22 @@ const axiosSecure = useAxiosSecure();
     setEditingLink(record);
   };
 
-
-
   // Table Columns
   const columns = [
     {
-        title: "Shareable Links",
-        key: "shareableLink",
-        render: (_, record) => (
-          <a
-            href={`http://localhost:5000/link/${record.uniqueID}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            {`http://localhost:5000/link/${record.uniqueID}`}
-          </a>
-        ),
-      },
+      title: "Shareable Links",
+      key: "shareableLink",
+      render: (_, record) => (
+        <a
+          href={`http://localhost:5000/link/${record.uniqueID}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          {`http://localhost:5000/link/${record.uniqueID}`}
+        </a>
+      ),
+    },
     {
       title: "Content Type",
       dataIndex: "contentType",
@@ -67,24 +68,32 @@ const axiosSecure = useAxiosSecure();
       key: "accessType",
     },
     {
-        title: "Created At",
-        dataIndex: "createdAt",
-        key: "createdAt",
-      },
-      {
-        title: "Expiration Time",
-        dataIndex: "expirationTime",
-        key: "expirationTime",
-      },
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
+    {
+      title: "Expiration Time",
+      dataIndex: "expirationTime",
+      key: "expirationTime",
+    },
     {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
             Edit
           </Button>
-          <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record._id)}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record._id)}
+          >
             Delete
           </Button>
         </Space>
@@ -92,6 +101,7 @@ const axiosSecure = useAxiosSecure();
     },
   ];
 
+  //
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg overflow-auto">
       <h2 className="text-xl font-semibold mb-4">Link List</h2>
@@ -104,8 +114,12 @@ const axiosSecure = useAxiosSecure();
       />
 
       {/* Edit Modal */}
-          <UpdateLinkModal refetch={refetch} linkData={editingLink} visible={!!editingLink} onClose={() => setEditingLink(null)}/>
-   
+      <UpdateLinkModal
+        refetch={refetch}
+        linkData={editingLink}
+        visible={!!editingLink}
+        onClose={() => setEditingLink(null)}
+      />
     </div>
   );
 };
