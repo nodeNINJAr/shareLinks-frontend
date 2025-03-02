@@ -56,7 +56,7 @@ const Navbar = () => {
       {/* Profile & Login/Logout */}
       <div className="flex items-center gap-4">
         {user ? (
-          <img src={user?.displayURL} alt="Profile" className="w-8 h-8 rounded-full cursor-pointer" />
+          <img src={user?.photoURL} alt="Profile" className="w-8 h-8 rounded-full cursor-pointer" />
         ) : (
           <UserOutlined className="text-xl text-gray-700 cursor-pointer" />
         )}

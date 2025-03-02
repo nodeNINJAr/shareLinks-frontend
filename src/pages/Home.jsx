@@ -1,13 +1,12 @@
-import React from 'react'
-import LinkForm from '../components/LinkForm'
+import { Button } from "antd";
+import React from "react";
 
 const Home = () => {
   return (
-    <div>
-        <h1>hello from home</h1>
-     
+    <div class="bg-gradient-to-r from-blue-400 to-purple-500 min-h-screen flex justify-center items-center">
+       <Button variant="outline">Upload And Share link today</Button>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

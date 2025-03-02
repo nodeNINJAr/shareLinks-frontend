@@ -2,18 +2,11 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Upload, Button, Input, message, Card, Checkbox, DatePicker } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import axios from 'axios'
-import useAuth from '../hooks/useAuth';
-import useAxiosSecure from '../hooks/useAxiosSecure';
+import axios from 'axios';
 
 const { TextArea } = Input;
 
-
-// 
-const LinkForm = () => {
-  const {user} = useAuth();
-   const axiosSecure = useAxiosSecure();
-  // 
+const UpdateForm = ({ initialData, onUpdateSuccess }) => {
   const {
     control,
     handleSubmit,
@@ -23,15 +16,15 @@ const LinkForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      textContent: '',
-      files: [],
-      accessType: 'private', // Default to private
-      password: '',
-      expirationTime: null,
+      textContent: initialData?.textContent || '',
+      files: initialData?.files || [],
+      accessType: initialData?.accessType || 'private', // Default to private
+      password: initialData?.password || '',
+      expirationTime: initialData?.expirationTime || null,
     },
   });
 
-  const [fileList, setFileList] = useState([]);
+  const [fileList, setFileList] = useState(initialData?.files || []);
   const [loading, setLoading] = useState(false);
 
   // Watching the fields
@@ -60,6 +53,7 @@ const LinkForm = () => {
       message.error('You can only use text or files, not both.');
       return;
     }
+
     setLoading(true);
 
     try {
@@ -81,13 +75,20 @@ const LinkForm = () => {
       formData.append('accessType', data.accessType);
       formData.append('password', data.accessType === 'private' ? data.password : '');
       formData.append('expirationTime', data.expirationTime ? data.expirationTime.toISOString() : '');
-      formData.append('userId', user?.uid);
 
-      // Send the FormData to the backend
-      const {data:genaratedLink} = await axiosSecure.post('/link/generate',formData);
-      // 
-      message.success('Link generated successfully!');
-      console.log('Generated Link:', genaratedLink?.shareableLink);
+      // Send the FormData to the backend for update
+      const { data: updatedLink } = await axios.put(
+        `http://localhost:5000/link/update/${initialData.id}`,
+        formData
+      );
+
+      message.success('Link updated successfully!');
+      console.log('Updated Link:', updatedLink?.shareableLink);
+
+      // Callback to handle success (e.g., close modal or refresh data)
+      if (onUpdateSuccess) {
+        onUpdateSuccess(updatedLink);
+      }
     } catch (error) {
       console.error('Error:', error);
       message.error('Something went wrong!');
@@ -95,12 +96,9 @@ const LinkForm = () => {
       setLoading(false);
     }
   };
-   
 
-
-  // 
   return (
-    <Card title="Generate a Shareable Link" variant="outlined" style={{ maxWidth: 450, margin: 'auto' }}>
+    <Card title="Update Shareable Link" variant="outlined" style={{ maxWidth: 450, margin: 'auto' }}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Text Content */}
         <Controller
@@ -132,8 +130,8 @@ const LinkForm = () => {
               {...field}
               fileList={fileList}
               onChange={handleFileUpload}
-              beforeUpload={() => false} 
-              maxCount={1} 
+              beforeUpload={() => false} // Prevent auto upload
+              maxCount={1} // Allow only one file
               disabled={!!textContent}
             >
               <Button icon={<UploadOutlined />} disabled={!!textContent}>
@@ -143,53 +141,55 @@ const LinkForm = () => {
           )}
         />
         {errors.files && <p style={{ color: 'red' }}>{errors.files.message}</p>}
-       <div className='flex justify-between gap-6 items-center'>   
-        {/* Access Type (Private/Public) */}
-        <Controller
-          name="accessType"
-          control={control}
-           render={({ field }) => (
-            <Checkbox
-              {...field}
-              checked={field.value === 'public'}
-              onChange={(e) => {
-                setValue('accessType', e.target.checked ? 'public' : 'private');
-                if (e.target.checked) {
-                  setValue('password', ''); // Clear password if access type is public
-                }
-              }}
-            >
-              Public
-            </Checkbox>
-          )}
-        />
 
-        {/* Password Input (Conditional) */}
-        {accessType === 'private' && (
+        <div className="flex justify-between gap-6 items-center">
+          {/* Access Type (Private/Public) */}
           <Controller
-            name="password"
+            name="accessType"
             control={control}
-            rules={{
-              required: 'Password is required for private access.',
-              minLength: {
-                value: 6,
-                message: 'Password must be at least 6 characters long.',
-              },
-              pattern: {
-                value: /^(?=.*\d).{6,}$/, // At least one number and 6 characters
-                message: 'Password must contain at least one number.',
-              },
-            }}
             render={({ field }) => (
-              <Input.Password
+              <Checkbox
                 {...field}
-                placeholder="Enter password"
-              />
+                checked={field.value === 'public'}
+                onChange={(e) => {
+                  setValue('accessType', e.target.checked ? 'public' : 'private');
+                  if (e.target.checked) {
+                    setValue('password', ''); // Clear password if access type is public
+                  }
+                }}
+              >
+                Public
+              </Checkbox>
             )}
           />
-        )}
+
+          {/* Password Input (Conditional) */}
+          {accessType === 'private' && (
+            <Controller
+              name="password"
+              control={control}
+              rules={{
+                required: 'Password is required for private access.',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters long.',
+                },
+                pattern: {
+                  value: /^(?=.*\d).{6,}$/, // At least one number and 6 characters
+                  message: 'Password must contain at least one number.',
+                },
+              }}
+              render={({ field }) => (
+                <Input.Password
+                  {...field}
+                  placeholder="Enter password"
+                />
+              )}
+            />
+          )}
+        </div>
         {errors.password && <p style={{ color: 'red' }}>{errors.password.message}</p>}
-       </div>
+
         {/* Expiration Time */}
         <Controller
           name="expirationTime"
@@ -207,11 +207,11 @@ const LinkForm = () => {
 
         {/* Submit Button */}
         <Button type="primary" htmlType="submit" block loading={loading}>
-          Create Link
+          Update Link
         </Button>
       </form>
     </Card>
   );
 };
 
-export default LinkForm;
+export default UpdateForm;
