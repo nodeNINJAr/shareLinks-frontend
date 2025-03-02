@@ -1,9 +1,12 @@
 import React from 'react'
 import { Outlet } from 'react-router'
+import Navbar from './components/navbar/Navbar'
 
-const App = () => {
+const Layout = () => {
   return (
        <div>
+        {/* navbar */}
+          <Navbar/>
           {/* main */}
           <main>
               <Outlet/>
@@ -12,4 +15,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Layout

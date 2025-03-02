@@ -16,7 +16,7 @@ const handleGoogleLogin = async() => {
   // 
   try{
     await googleLoginIn();
-    message.info('Google login Succesfully.');
+    message.success('Google login Succesfully.');
     navigate('/app')
    }catch(err){
      console.log(err.message);

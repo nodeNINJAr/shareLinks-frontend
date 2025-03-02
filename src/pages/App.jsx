@@ -1,13 +1,12 @@
 import React from 'react'
 import LinkForm from '../components/LinkForm'
 
-const Home = () => {
+const App = () => {
   return (
     <div>
-        <h1>hello from home</h1>
-     
+        <LinkForm/>
     </div>
   )
 }
 
-export default Home
+export default App
