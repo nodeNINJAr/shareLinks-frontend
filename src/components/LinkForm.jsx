@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios'
 import useAuth from '../hooks/useAuth';
 import useAxiosSecure from '../hooks/useAxiosSecure';
+import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
@@ -51,6 +52,7 @@ const LinkForm = () => {
 
   // Handle form submission
   const onSubmit = async (data) => {
+    console.log(data);
     if (!data.textContent && fileList.length === 0) {
       message.error('Please provide either text content or a file.');
       return;
@@ -65,7 +67,7 @@ const LinkForm = () => {
     try {
       // Create a FormData object
       const formData = new FormData();
-
+       console.log(formData);
       // Append text content (if provided)
       if (data.textContent) {
         formData.append('text', data.textContent);
@@ -80,7 +82,7 @@ const LinkForm = () => {
       // Append other fields
       formData.append('accessType', data.accessType);
       formData.append('password', data.accessType === 'private' ? data.password : '');
-      formData.append('expirationTime', data.expirationTime ? data.expirationTime.toISOString() : '');
+      formData.append('expirationTime', data.expirationTime ? dayjs(data.expirationTime).format("YYYY-MM-DD HH:mm:ss") : '');
       formData.append('userId', user?.uid);
 
       // Send the FormData to the backend

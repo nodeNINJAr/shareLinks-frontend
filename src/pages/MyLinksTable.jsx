@@ -1,17 +1,13 @@
 import React, {useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, message } from "antd";
+import { Table, Button,Space, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
+import UpdateLinkModal from "../components/UpdateLinkModal";
 
 const LinkList = () => {
-  const [links, setLinks] = useState([]); // Stores fetched links
   const [editingLink, setEditingLink] = useState(null);
-  const [form] = Form.useForm();
-  
-
   // 
 const {user} = useAuth();
 const axiosSecure = useAxiosSecure();
@@ -38,19 +34,11 @@ const axiosSecure = useAxiosSecure();
   };
 
   // Handle Edit
-
-  // Handle Save
-  const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
-      await axios.put(`/api/links/${editingLink._id}`, values);
-      setLinks(links.map((link) => (link._id === editingLink._id ? { ...link, ...values } : link)));
-      message.success("Link updated successfully");
-      setEditingLink(null);
-    } catch (error) {
-      message.error("Failed to update link");
-    }
+  const handleEdit = (record) => {
+    setEditingLink(record);
   };
+
+
 
   // Table Columns
   const columns = [
@@ -116,21 +104,8 @@ const axiosSecure = useAxiosSecure();
       />
 
       {/* Edit Modal */}
-      <Modal
-        title="Edit Link"
-        open={!!editingLink}
-        onCancel={() => setEditingLink(null)}
-        onOk={handleSave}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="content" label="Content" rules={[{ required: true, message: "Content is required" }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="accessType" label="Access Type" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
+          <UpdateLinkModal refetch={refetch} linkData={editingLink} visible={!!editingLink} onClose={() => setEditingLink(null)}/>
+   
     </div>
   );
 };

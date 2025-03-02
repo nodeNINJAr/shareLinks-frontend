@@ -11,7 +11,7 @@ import Layout from "./Layout.jsx";
 import App from "./pages/App.jsx";
 import MyLinksTable from "./pages/MyLinksTable.jsx";
 import PrivateRoute from "./private/PrivateRoute.jsx";
-import UpdateForm from "./components/UpdateForm.jsx";
+import UpdateForm from "./components/UpdateLinkModal.jsx";
 import {
   QueryClient,
   QueryClientProvider,
@@ -31,7 +31,6 @@ createRoot(document.getElementById("root")).render(
                <Route index element={<Home />} />
                 <Route path="app" element={<App />} />
                 <Route path="my-links" element={<PrivateRoute><MyLinksTable /></PrivateRoute>} />
-                <Route path="my-links/:id/update" element={<PrivateRoute><UpdateForm /></PrivateRoute>} />
               </Route>
              {/* auth */}
               <Route path="auth/login" element={<Login />} />
